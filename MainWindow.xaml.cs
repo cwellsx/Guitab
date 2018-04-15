@@ -17,6 +17,8 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Threading;
 using Microsoft.Win32;
 
+using System.Diagnostics;
+
 namespace Guitab
 {
     /// <summary>
@@ -29,24 +31,38 @@ namespace Guitab
         private bool mediaPlayerIsPlaying = false;
         private bool userIsDraggingSlider = false;
 
+        Stopwatch stopwatch = new Stopwatch();
+        //bool playing;
+
         public MainWindow()
         {
             InitializeComponent();
 
+            //ellapsed = new TimeSpan();
+
+            // 170 bpm = 3 per second sec
+            // * 4 to cope with quarter notes
+            // * 10 for accuracy
+            // => 120 second
+            // DispatcherTimer precision is about 20 msec so 50 / second
             DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Interval = TimeSpan.FromMilliseconds(1);
             timer.Tick += timer_Tick;
             timer.Start();
         }
 
         private void timer_Tick(object sender, EventArgs e)
         {
-            if ((mePlayer.Source != null) && (mePlayer.NaturalDuration.HasTimeSpan) && (!userIsDraggingSlider))
-            {
-                sliProgress.Minimum = 0;
-                sliProgress.Maximum = mePlayer.NaturalDuration.TimeSpan.TotalSeconds;
-                sliProgress.Value = mePlayer.Position.TotalSeconds;
-            }
+            if (!mediaPlayerIsPlaying)
+                return;
+            long msec=stopwatch.ElapsedMilliseconds;
+            viewTabs.TimerTick(msec);
+            //if ((mePlayer.Source != null) && (mePlayer.NaturalDuration.HasTimeSpan) && (!userIsDraggingSlider))
+            //{
+            //    sliProgress.Minimum = 0;
+            //    sliProgress.Maximum = mePlayer.NaturalDuration.TimeSpan.TotalSeconds;
+            //    sliProgress.Value = mePlayer.Position.TotalSeconds;
+            //}
         }
 
         private void Open_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -58,19 +74,22 @@ namespace Guitab
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Media files (*.mp3;*.mpg;*.mpeg)|*.mp3;*.mpg;*.mpeg|All files (*.*)|*.*";
-            if (openFileDialog.ShowDialog() == true)
-                mePlayer.Source = new Uri(openFileDialog.FileName);
+            //if (openFileDialog.ShowDialog() == true)
+            //    mePlayer.Source = new Uri(openFileDialog.FileName);
+            viewTabs.LoadTabs(8);
         }
 
         private void Play_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = (mePlayer != null) && (mePlayer.Source != null);
+            //e.CanExecute = (mePlayer != null) && (mePlayer.Source != null);
+            e.CanExecute = (viewTabs!=null)&&viewTabs.HasLoadedBars;
         }
 
         private void Play_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            mePlayer.Play();
+            //mePlayer.Play();
             mediaPlayerIsPlaying = true;
+            stopwatch.Start();
         }
 
         private void Pause_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -80,7 +99,7 @@ namespace Guitab
 
         private void Pause_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            mePlayer.Pause();
+            //mePlayer.Pause();
         }
 
         private void Stop_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -90,7 +109,7 @@ namespace Guitab
 
         private void Stop_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            mePlayer.Stop();
+            //mePlayer.Stop();
             mediaPlayerIsPlaying = false;
         }
 
@@ -102,7 +121,7 @@ namespace Guitab
         private void sliProgress_DragCompleted(object sender, DragCompletedEventArgs e)
         {
             userIsDraggingSlider = false;
-            mePlayer.Position = TimeSpan.FromSeconds(sliProgress.Value);
+            //mePlayer.Position = TimeSpan.FromSeconds(sliProgress.Value);
         }
 
         private void sliProgress_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -112,7 +131,7 @@ namespace Guitab
 
         private void Grid_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            mePlayer.Volume += (e.Delta > 0) ? 0.1 : -0.1;
+            //mePlayer.Volume += (e.Delta > 0) ? 0.1 : -0.1;
         }
 
     }
