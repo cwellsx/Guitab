@@ -15,53 +15,26 @@ using System.Windows.Shapes;
 
 namespace Guitab.View
 {
-    /// <summary>
-    /// Follow steps 1a or 1b and then 2 to use this custom control in a XAML file.
-    ///
-    /// Step 1a) Using this custom control in a XAML file that exists in the current project.
-    /// Add this XmlNamespace attribute to the root element of the markup file where it is 
-    /// to be used:
-    ///
-    ///     xmlns:MyNamespace="clr-namespace:Guitab"
-    ///
-    ///
-    /// Step 1b) Using this custom control in a XAML file that exists in a different project.
-    /// Add this XmlNamespace attribute to the root element of the markup file where it is 
-    /// to be used:
-    ///
-    ///     xmlns:MyNamespace="clr-namespace:Guitab;assembly=Guitab"
-    ///
-    /// You will also need to add a project reference from the project where the XAML file lives
-    /// to this project and Rebuild to avoid compilation errors:
-    ///
-    ///     Right click on the target project in the Solution Explorer and
-    ///     "Add Reference"->"Projects"->[Browse to and select this project]
-    ///
-    ///
-    /// Step 2)
-    /// Go ahead and use your control in the XAML file.
-    ///
-    ///     <MyNamespace:ViewTabs/>
-    ///
-    /// </summary>
-    /// 
-
     // derive from WrapPanel as described at
     // https://docs.microsoft.com/en-us/dotnet/framework/wpf/controls/panels-overview
+
+    // add to XAML as described at
+    // https://docs.microsoft.com/en-us/dotnet/framework/wpf/advanced/xaml-namespaces-and-namespace-mapping-for-wpf-xaml
+
     public class Bars : WrapPanel
     {
-        List<ViewBar> bars;
+        List<Bar> bars;
 
-        internal void LoadTabs(int nBars)
+        internal void Load(Model.Bars modelBars)
         {
-            bars = new List<ViewBar>();
-
-            for(int i = 0; i < nBars; ++i)
+            // create a View.Bar for each Model.Bar
+            // and add each new View.Bar to this.Children
+            bars = new List<Bar>(modelBars.bars.Select(modelBar =>
             {
-                bars.Add(new ViewBar());
-            }
-
-            bars.ForEach(bar=>Children.Add(bar));
+                Bar bar = new Bar(modelBar);
+                Children.Add(bar);
+                return bar;
+            }));
         }
 
         internal bool HasLoadedBars { get { return bars != null && bars.Count > 0; } }
@@ -70,7 +43,7 @@ namespace Guitab.View
         {
             msec = msec % 2000;
 
-            ViewBar bar = bars[0];
+            Bar bar = bars[0];
             bar.TimerTick(msec);
         }
     }

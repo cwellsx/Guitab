@@ -36,7 +36,7 @@
         </ToolBar>
 
         <!--<MediaElement Name="mePlayer" Grid.Row="1" LoadedBehavior="Manual" Stretch="None" />-->
-        <localView:Bars x:Name="viewTabs" Grid.Row="1" />
+        <localView:Bars x:Name="viewBars" Grid.Row="1" />
 
         <StatusBar Grid.Row="2">
             <StatusBar.ItemsPanel>

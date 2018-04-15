@@ -55,6 +55,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Model\Bar.cs" />
+    <Compile Include="Model\Bars.cs" />
+    <Compile Include="Model\InputFile.cs" />
     <Compile Include="View\Bar.cs" />
     <Compile Include="View\Bars.cs" />
     <Page Include="MainWindow.xaml">
@@ -107,9 +110,7 @@
     <Resource Include="Images\StatusRun_32x.png" />
     <Resource Include="Images\StatusStop_32x.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Model\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

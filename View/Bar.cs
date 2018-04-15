@@ -11,11 +11,11 @@ using System.Windows.Media;
 
 namespace Guitab.View
 {
-    class ViewBar : Canvas
+    class Bar : Canvas
     {
         Line cursor;
 
-        internal ViewBar()
+        internal Bar(Model.Bar modelBar)
         {
 
             Width = 220;

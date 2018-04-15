@@ -58,7 +58,7 @@ namespace Guitab
             if (!mediaPlayerIsPlaying)
                 return;
             long msec=stopwatch.ElapsedMilliseconds;
-            viewTabs.TimerTick(msec);
+            viewBars.TimerTick(msec);
             //if ((mePlayer.Source != null) && (mePlayer.NaturalDuration.HasTimeSpan) && (!userIsDraggingSlider))
             //{
             //    sliProgress.Minimum = 0;
@@ -78,13 +78,14 @@ namespace Guitab
             openFileDialog.Filter = "Media files (*.mp3;*.mpg;*.mpeg)|*.mp3;*.mpg;*.mpeg|All files (*.*)|*.*";
             //if (openFileDialog.ShowDialog() == true)
             //    mePlayer.Source = new Uri(openFileDialog.FileName);
-            viewTabs.LoadTabs(8);
+            Model.Bars modelBars = Model.InputFile.Load();
+            viewBars.Load(modelBars);
         }
 
         private void Play_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             //e.CanExecute = (mePlayer != null) && (mePlayer.Source != null);
-            e.CanExecute = (viewTabs!=null)&&viewTabs.HasLoadedBars;
+            e.CanExecute = (viewBars != null)&& viewBars.HasLoadedBars;
         }
 
         private void Play_Executed(object sender, ExecutedRoutedEventArgs e)
