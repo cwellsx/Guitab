@@ -21,17 +21,17 @@
         </Grid.RowDefinitions>
         <ToolBar>
             <Button Command="ApplicationCommands.Open">
-                <Image Source="/Images/folder.png" />
+                <Image Source="/Images/Folder_32x.png" />
             </Button>
             <Separator />
             <Button Command="MediaCommands.Play">
-                <Image Source="/Images/play.png" />
+                <Image Source="/Images/StatusRun_32x.png" />
             </Button>
             <Button Command="MediaCommands.Pause">
-                <Image Source="/Images/pause.png" />
+                <Image Source="/Images/StatusPause_32x.png" />
             </Button>
             <Button Command="MediaCommands.Stop">
-                <Image Source="/Images/stop.png" />
+                <Image Source="/Images/StatusStop_32x.png" />
             </Button>
         </ToolBar>
 

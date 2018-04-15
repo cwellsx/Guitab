@@ -102,10 +102,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\folder.png" />
-    <Resource Include="Images\pause.png" />
-    <Resource Include="Images\play.png" />
-    <Resource Include="Images\stop.png" />
+    <Resource Include="Images\Folder_32x.png" />
+    <Resource Include="Images\StatusPause_32x.png" />
+    <Resource Include="Images\StatusRun_32x.png" />
+    <Resource Include="Images\StatusStop_32x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Model\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
