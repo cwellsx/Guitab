@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Guitab
+namespace Guitab.View
 {
     /// <summary>
     /// Follow steps 1a or 1b and then 2 to use this custom control in a XAML file.
@@ -48,7 +48,7 @@ namespace Guitab
 
     // derive from WrapPanel as described at
     // https://docs.microsoft.com/en-us/dotnet/framework/wpf/controls/panels-overview
-    public class ViewTabs : WrapPanel
+    public class Bars : WrapPanel
     {
         List<ViewBar> bars;
 

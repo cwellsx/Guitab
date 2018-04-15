@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Guitab"
-        
+        xmlns:localView="clr-namespace:Guitab.View"
         mc:Ignorable="d"
         Title="Guitar Tab" Height="350" Width="525">
     <Window.CommandBindings>
@@ -36,7 +36,7 @@
         </ToolBar>
 
         <!--<MediaElement Name="mePlayer" Grid.Row="1" LoadedBehavior="Manual" Stretch="None" />-->
-        <local:ViewTabs x:Name="viewTabs" Grid.Row="1" />
+        <localView:Bars x:Name="viewTabs" Grid.Row="1" />
 
         <StatusBar Grid.Row="2">
             <StatusBar.ItemsPanel>

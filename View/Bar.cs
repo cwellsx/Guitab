@@ -9,9 +9,9 @@ using System.Windows.Controls;
 using System.Windows.Shapes;
 using System.Windows.Media;
 
-namespace Guitab
+namespace Guitab.View
 {
-    class ViewBar:Canvas
+    class ViewBar : Canvas
     {
         Line cursor;
 
@@ -23,7 +23,7 @@ namespace Guitab
 
             for (int i = 0; i < 6; ++i)
             {
-                newHorizontal(20, 200, 50 + 20*i);
+                newHorizontal(20, 200, 50 + 20 * i);
             }
 
             this.Background = Brushes.Ivory;
@@ -57,7 +57,7 @@ namespace Guitab
 
         internal void TimerTick(long msec)
         {
-            if (cursor==null)
+            if (cursor == null)
             {
                 cursor = newLine(20, 20, 50, 150, Brushes.Red);
             }

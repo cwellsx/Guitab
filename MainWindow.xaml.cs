@@ -19,6 +19,8 @@ using Microsoft.Win32;
 
 using System.Diagnostics;
 
+using Guitab.View;
+
 namespace Guitab
 {
     /// <summary>
