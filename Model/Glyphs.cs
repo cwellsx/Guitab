@@ -41,9 +41,30 @@ namespace Guitab.Model.Glyphs
     internal class BarNumber : Glyph
     {
         readonly int number;
+        internal readonly int? likeOther;
+        internal readonly string comment;
         internal BarNumber(int number) : base(0) { this.number = number; }
+        internal BarNumber(int number, int likeOther) : base(0) { this.number = number; this.likeOther = likeOther; }
+        internal BarNumber(int number, string comment) : base(0) { this.number = number; this.comment = comment; }
         internal override void setState(State state) { }
         internal override int? newBarNumber { get { return number; } }
+        protected override void setBar(Bar bar, double time) { }
+    }
+
+    internal class Note : Glyph
+    {
+        readonly internal int line;
+        readonly internal int fret;
+        internal Note(int line, int fret, double time) : base(time) { this.line = line; this.fret = fret; }
+        internal override void setState(State state) { }
+        protected override void setBar(Bar bar, double time) { }
+    }
+
+    internal class Chord : Glyph
+    {
+        readonly internal string name;
+        internal Chord(string name, double time) : base(time) { this.name = name; }
+        internal override void setState(State state) { }
         protected override void setBar(Bar bar, double time) { }
     }
 }
