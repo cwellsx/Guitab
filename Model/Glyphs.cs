@@ -48,7 +48,7 @@ namespace Guitab.Model.Glyphs
         internal BarNumber(int number, string comment) : base(0) { this.number = number; this.comment = comment; }
         internal override void setState(State state) { }
         internal override int? newBarNumber { get { return number; } }
-        protected override void setBar(Bar bar, double time) { }
+        protected override void setBar(Bar bar, double time) { throw new Exception(); }
     }
 
     internal class Note : Glyph
@@ -57,7 +57,7 @@ namespace Guitab.Model.Glyphs
         readonly internal int fret;
         internal Note(int line, int fret, double time) : base(time) { this.line = line; this.fret = fret; }
         internal override void setState(State state) { }
-        protected override void setBar(Bar bar, double time) { }
+        protected override void setBar(Bar bar, double time) { bar.Add(this); }
     }
 
     internal class Chord : Glyph
@@ -65,6 +65,6 @@ namespace Guitab.Model.Glyphs
         readonly internal string name;
         internal Chord(string name, double time) : base(time) { this.name = name; }
         internal override void setState(State state) { }
-        protected override void setBar(Bar bar, double time) { }
+        protected override void setBar(Bar bar, double time) { bar.Add(this); }
     }
 }

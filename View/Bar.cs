@@ -9,6 +9,8 @@ using System.Windows.Controls;
 using System.Windows.Shapes;
 using System.Windows.Media;
 
+using Guitab.Model.Glyphs;
+
 namespace Guitab.View
 {
     class Bar : Canvas
@@ -17,16 +19,67 @@ namespace Guitab.View
 
         internal Bar(Model.Bar modelBar)
         {
-
             Width = 220;
             Height = 190;
 
             for (int i = 0; i < 6; ++i)
             {
-                newHorizontal(20, 200, 50 + 20 * i);
+                newHorizontal(20, 200, lineY(i));
             }
 
-            this.Background = Brushes.Ivory;
+            foreach (Chord chord in modelBar.chords)
+            {
+                newLabel(
+                    lineY(6),
+                    timeX(chord.time, modelBar.beatsPerBar),
+                    chord.name,
+                    false
+                    );
+            }
+
+            foreach (Note note in modelBar.notes)
+            {
+                newLabel(
+                    lineY(note.line),
+                    timeX(note.time, modelBar.beatsPerBar),
+                    note.fret.ToString(),
+                    true
+                    );
+            }
+
+            this.Background = backgroundBrush;
+        }
+
+        static Brush backgroundBrush = Brushes.Ivory;
+
+        static int lineY(int line)
+        {
+            return 150 - (20 * line);
+        }
+
+        static double timeX(double time, int beatsPerBar)
+        {
+            return (180 * (time / beatsPerBar)) + 20;
+        }
+
+        void newLabel(double y, double x, string text, bool opaqueBackground)
+        {
+            TextBlock textBlock = new TextBlock();
+            textBlock.Text = text;
+
+            // https://stackoverflow.com/questions/9264398/how-to-calculate-wpf-textblock-width-for-its-known-font-size-and-characters
+            textBlock.Measure(new Size(Double.PositiveInfinity, Double.PositiveInfinity));
+            textBlock.Arrange(new Rect(textBlock.DesiredSize));
+            double width = textBlock.ActualWidth;
+            double height = textBlock.ActualHeight;
+
+            if (opaqueBackground)
+                textBlock.Background = backgroundBrush;
+
+            Canvas.SetTop(textBlock, y - (height / 2));
+            Canvas.SetLeft(textBlock, x);
+
+            base.Children.Add(textBlock);
         }
 
         void newHorizontal(double x1, double x2, double y)
