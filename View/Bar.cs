@@ -15,10 +15,15 @@ namespace Guitab.View
 {
     class Bar : Canvas
     {
+        readonly Model.State state;
         Line cursor;
+
+        enum LabelType { Chord, Note, BarNumber };
 
         internal Bar(Model.Bar modelBar)
         {
+            state = modelBar.state;
+
             Width = 220;
             Height = 190;
 
@@ -31,9 +36,9 @@ namespace Guitab.View
             {
                 newLabel(
                     lineY(6),
-                    timeX(chord.time, modelBar.beatsPerBar),
+                    timeX(chord.time, LabelType.Chord),
                     chord.name,
-                    false
+                    LabelType.Chord
                     );
             }
 
@@ -41,11 +46,18 @@ namespace Guitab.View
             {
                 newLabel(
                     lineY(note.line),
-                    timeX(note.time, modelBar.beatsPerBar),
+                    timeX(note.time, LabelType.Note),
                     note.fret.ToString(),
-                    true
+                    LabelType.Note
                     );
             }
+
+            newLabel(
+                lineY(7),
+                timeX(0, LabelType.BarNumber),
+                modelBar.barNumber.ToString(),
+                LabelType.BarNumber
+                );
 
             this.Background = backgroundBrush;
         }
@@ -57,12 +69,30 @@ namespace Guitab.View
             return 150 - (20 * line);
         }
 
+        double timeX(double time, LabelType labelType)
+        {
+            int beatsPerBar = state.beatsPerBar;
+            double start = timeX(time, beatsPerBar);
+            switch(labelType)
+            {
+                case LabelType.Chord:
+                case LabelType.BarNumber:
+                    return start;
+                case LabelType.Note:
+                    double span = (double)state.beatsPerBar / state.nIntervalsPerBar;
+                    double next = timeX(time + span, beatsPerBar);
+                    return (start + next) / 2;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
         static double timeX(double time, int beatsPerBar)
         {
             return (180 * (time / beatsPerBar)) + 20;
         }
 
-        void newLabel(double y, double x, string text, bool opaqueBackground)
+        void newLabel(double y, double x, string text, LabelType labelType)
         {
             TextBlock textBlock = new TextBlock();
             textBlock.Text = text;
@@ -73,8 +103,15 @@ namespace Guitab.View
             double width = textBlock.ActualWidth;
             double height = textBlock.ActualHeight;
 
-            if (opaqueBackground)
-                textBlock.Background = backgroundBrush;
+            switch (labelType)
+            {
+                case LabelType.Note:
+                    textBlock.Background = backgroundBrush;
+                    break;
+                case LabelType.BarNumber:
+                    textBlock.FontSize = 9;
+                    break;
+            }
 
             Canvas.SetTop(textBlock, y - (height / 2));
             Canvas.SetLeft(textBlock, x);

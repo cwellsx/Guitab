@@ -33,7 +33,8 @@ namespace Guitab.Model.Glyphs
     {
         internal readonly int beatsPerBar;
         internal readonly int beatUnit;
-        internal Signature(int beatsPerBar, int beatUnit, double time = 0) : base(time) { this.beatsPerBar = beatsPerBar; this.beatUnit = beatUnit; }
+        internal readonly int nIntervalsPerBar;
+        internal Signature(int beatsPerBar, int beatUnit, int nIntervalsPerBar) : base(0) { this.beatsPerBar = beatsPerBar; this.beatUnit = beatUnit; this.nIntervalsPerBar = nIntervalsPerBar; }
         internal override void setState(State state) { state.signature = this; }
         protected override void setBar(Bar bar, double time) { throw new NotImplementedException(); }
     }

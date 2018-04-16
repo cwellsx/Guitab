@@ -115,7 +115,6 @@ namespace Guitab.Model
 
         class StateStart : IInputState
         {
-            Signature signature;
             int nIntervalsPerBar;
 
             IInputState newState;
@@ -130,18 +129,15 @@ namespace Guitab.Model
 
             public IEnumerable<Glyph> readLine(string line)
             {
-                if (signature == null)
-                {
-                    signature = new Signature(4, 4);
-                    yield return signature;
-                }
-
                 if (Format.isNotes(line))
                 {
                     assert(!Format.readNotes(line, 0).Any());
                     ++nIntervalsPerBar;
                     yield break;
                 }
+
+                Signature signature= new Signature(4, 4, nIntervalsPerBar);
+                yield return signature;
 
                 assert(nIntervalsPerBar == (signature.beatsPerBar * 2));
                 newState = new StateMain(signature, nIntervalsPerBar);

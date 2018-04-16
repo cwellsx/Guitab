@@ -11,11 +11,9 @@ namespace Guitab.Model
     class Bar
     {
         internal readonly int barNumber;
-        readonly State state;
+        internal readonly State state;
         internal List<Chord> chords = new List<Chord>();
         internal List<Note> notes = new List<Note>();
-
-        internal int beatsPerBar { get { return state.beatsPerBar; } }
 
         internal Bar(int barNumber, State state)
         {
@@ -35,7 +33,7 @@ namespace Guitab.Model
 
         void assert(Glyph glyph)
         {
-            if (glyph.time >= beatsPerBar)
+            if (glyph.time >= state.beatsPerBar)
                 throw new Exception();
         }
     }
