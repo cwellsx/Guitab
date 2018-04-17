@@ -17,7 +17,7 @@ namespace Guitab.Model.Glyphs
 
         internal abstract void setState(State state);
         internal void setBar(Bar bar) { setBar(bar, time); }
-        internal virtual int? newBarNumber { get { return null; } }
+        internal virtual BarNumber newBarNumber { get { return null; } }
         protected abstract void setBar(Bar bar, double time);
     }
 
@@ -41,14 +41,14 @@ namespace Guitab.Model.Glyphs
 
     internal class BarNumber : Glyph
     {
-        readonly int number;
+        internal readonly int number;
         internal readonly int? likeOther;
         internal readonly string comment;
         internal BarNumber(int number) : base(0) { this.number = number; }
         internal BarNumber(int number, int likeOther) : base(0) { this.number = number; this.likeOther = likeOther; }
         internal BarNumber(int number, string comment) : base(0) { this.number = number; this.comment = comment; }
         internal override void setState(State state) { }
-        internal override int? newBarNumber { get { return number; } }
+        internal override BarNumber newBarNumber { get { return this; } }
         protected override void setBar(Bar bar, double time) { throw new Exception(); }
     }
 

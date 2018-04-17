@@ -10,12 +10,12 @@ namespace Guitab.Model
 {
     class Bar
     {
-        internal readonly int barNumber;
+        internal readonly BarNumber barNumber;
         internal readonly State state;
         internal List<Chord> chords = new List<Chord>();
         internal List<Note> notes = new List<Note>();
 
-        internal Bar(int barNumber, State state)
+        internal Bar(BarNumber barNumber, State state)
         {
             this.barNumber = barNumber;
             this.state = state;

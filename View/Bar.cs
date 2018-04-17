@@ -18,9 +18,9 @@ namespace Guitab.View
         readonly Model.State state;
         Line cursor;
 
-        enum LabelType { Chord, Note, BarNumber };
+        enum LabelType { Chord, Note, BarNumber, Comment };
 
-        internal Bar(Model.Bar modelBar)
+        internal Bar(Model.Bar modelBar, Model.Bar likeOther = null)
         {
             state = modelBar.state;
 
@@ -32,6 +32,37 @@ namespace Guitab.View
                 newHorizontal(20, 200, lineY(i));
             }
 
+            newLabel(
+                lineY(5),
+                timeX(0, LabelType.BarNumber),
+                modelBar.barNumber.number.ToString(),
+                LabelType.BarNumber
+                );
+
+            string comment = modelBar.barNumber.comment;
+            if (string.IsNullOrEmpty(comment) && (likeOther != null))
+                comment = string.Format("(like {0})", likeOther.barNumber.number);
+
+            if (!string.IsNullOrEmpty(comment))
+            {
+                newLabel(
+                    lineY(-1),
+                    timeX(0, LabelType.Comment),
+                    comment,
+                    LabelType.Comment
+                    );
+            }
+
+            if (likeOther != null)
+                showContents(likeOther);
+            else
+                showContents(modelBar);
+
+            this.Background = backgroundBrush;
+        }
+
+        void showContents(Model.Bar modelBar)
+        {
             foreach (Chord chord in modelBar.chords)
             {
                 newLabel(
@@ -51,15 +82,6 @@ namespace Guitab.View
                     LabelType.Note
                     );
             }
-
-            newLabel(
-                lineY(7),
-                timeX(0, LabelType.BarNumber),
-                modelBar.barNumber.ToString(),
-                LabelType.BarNumber
-                );
-
-            this.Background = backgroundBrush;
         }
 
         static Brush backgroundBrush = Brushes.Ivory;
@@ -73,10 +95,11 @@ namespace Guitab.View
         {
             int beatsPerBar = state.beatsPerBar;
             double start = timeX(time, beatsPerBar);
-            switch(labelType)
+            switch (labelType)
             {
                 case LabelType.Chord:
                 case LabelType.BarNumber:
+                case LabelType.Comment:
                     return start;
                 case LabelType.Note:
                     double span = (double)state.beatsPerBar / state.nIntervalsPerBar;
@@ -97,6 +120,21 @@ namespace Guitab.View
             TextBlock textBlock = new TextBlock();
             textBlock.Text = text;
 
+            // set font size before measuring text
+            switch (labelType)
+            {
+                case LabelType.Chord:
+                case LabelType.Note:
+                    // default size is 12
+                    break;
+                case LabelType.BarNumber:
+                case LabelType.Comment:
+                    textBlock.FontSize = 9;
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
             // https://stackoverflow.com/questions/9264398/how-to-calculate-wpf-textblock-width-for-its-known-font-size-and-characters
             textBlock.Measure(new Size(Double.PositiveInfinity, Double.PositiveInfinity));
             textBlock.Arrange(new Rect(textBlock.DesiredSize));
@@ -105,15 +143,30 @@ namespace Guitab.View
 
             switch (labelType)
             {
+                case LabelType.Chord:
+                    y -= (height / 2);
+
+                    textBlock.Background = backgroundBrush;
+                    break;
+
                 case LabelType.Note:
+                    y -= (height / 2);
+                    x -= (width / 2);
+
                     textBlock.Background = backgroundBrush;
                     break;
                 case LabelType.BarNumber:
-                    textBlock.FontSize = 9;
+                    y -= height;
+                    x -= width;
+                    textBlock.Foreground = Brushes.Gray;
+                    break;
+                case LabelType.Comment:
+                    y -= height;
+                    textBlock.Foreground = Brushes.Gray;
                     break;
             }
 
-            Canvas.SetTop(textBlock, y - (height / 2));
+            Canvas.SetTop(textBlock, y);
             Canvas.SetLeft(textBlock, x);
 
             base.Children.Add(textBlock);

@@ -24,7 +24,7 @@ namespace Guitab.Model
         {
             State state = new Model.State();
 
-            int barNumber = 0;
+            int expectBarNumber = 0;
             Bar bar = null;
 
             foreach (Glyph glyph in glyphs)
@@ -33,12 +33,12 @@ namespace Guitab.Model
                 // add to the persistent state
                 glyph.setState(state);
 
-                if (glyph.newBarNumber.HasValue)
+                if (glyph.newBarNumber != null)
                 {
-                    int newNumber = glyph.newBarNumber.Value;
+                    BarNumber barNumber = glyph.newBarNumber;
 
                     // new Bar
-                    assert(newNumber == ++barNumber);
+                    assert(barNumber.number == ++expectBarNumber);
 
                     if (bar != null)
                         yield return bar;

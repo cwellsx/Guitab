@@ -31,7 +31,9 @@ namespace Guitab.View
             // and add each new View.Bar to this.Children
             bars = new List<Bar>(modelBars.bars.Select(modelBar =>
             {
-                Bar bar = new Bar(modelBar);
+                Bar bar = (!modelBar.barNumber.likeOther.HasValue)
+                ? new Bar(modelBar)
+                : new Bar(modelBar, modelBars[modelBar.barNumber.likeOther.Value - 1]);
                 Children.Add(bar);
                 return bar;
             }));
