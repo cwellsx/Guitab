@@ -60,6 +60,7 @@
     <Compile Include="Model\InputFile.cs" />
     <Compile Include="Model\Glyphs.cs" />
     <Compile Include="Model\State.cs" />
+    <Compile Include="Model\When.cs" />
     <Compile Include="View\Bar.cs" />
     <Compile Include="View\Bars.cs" />
     <Compile Include="View\IntegerTextBox.cs" />

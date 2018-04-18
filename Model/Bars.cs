@@ -15,7 +15,7 @@ namespace Guitab.Model
             listBars = new List<Bar>(bars);
         }
 
-        internal IEnumerable<Bar> bars {  get { return listBars; } }
+        internal IEnumerable<Bar> bars { get { return listBars; } }
 
         internal Bar this[int index] { get { return listBars[index]; } }
 
@@ -24,6 +24,22 @@ namespace Guitab.Model
         internal int getMsec(int beatsPerMinute)
         {
             return listBars.Sum(bar => bar.getMsec(beatsPerMinute));
+        }
+
+        internal When getWhen(long msec, int beatsPerMinute)
+        {
+            for (int i = 0; i < listBars.Count; ++i)
+            {
+                int msecBarDuration = listBars[i].getMsec(beatsPerMinute);
+                if (msecBarDuration > msec)
+                {
+                    // found it
+                    return new When(i, (int)msec, msecBarDuration);
+                }
+                msec -= msecBarDuration;
+            }
+
+            return new When(listBars.Count - 1, listBars[listBars.Count - 1].getMsec(beatsPerMinute));
         }
     }
 }

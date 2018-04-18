@@ -136,11 +136,11 @@ namespace Guitab.Model
                     yield break;
                 }
 
-                Signature signature= new Signature(4, 4, nIntervalsPerBar);
+                Signature signature = new Signature(4, 4, nIntervalsPerBar);
                 yield return signature;
 
                 assert(nIntervalsPerBar == (signature.beatsPerBar * 2));
-                newState = new StateMain(signature, nIntervalsPerBar);
+                newState = new StateMain(signature);
             }
         }
 
@@ -150,10 +150,10 @@ namespace Guitab.Model
             readonly int nIntervalsPerBeat;
             int nIntervals;
 
-            internal StateMain(Signature signature, int nIntervalsPerBar)
+            internal StateMain(Signature signature)
             {
-                this.nIntervalsPerBar = nIntervalsPerBar;
-                this.nIntervalsPerBeat = nIntervalsPerBar / signature.beatsPerBar;
+                this.nIntervalsPerBar = signature.nIntervalsPerBar;
+                this.nIntervalsPerBeat = signature.nIntervalsPerBeat;
                 assert(0 == (nIntervalsPerBar % signature.beatsPerBar));
                 // pretend we just finished a bar
                 nIntervals = nIntervalsPerBar;

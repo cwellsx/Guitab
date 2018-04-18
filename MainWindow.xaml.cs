@@ -73,6 +73,7 @@ namespace Guitab
             internal void OnLoad(int nBars)
             {
                 slider.IsEnabled = true;
+                // range is 1 <= n < nBars + 1
                 slider.Minimum = 1;
                 slider.Value = 1;
                 slider.SmallChange = 1;
@@ -145,7 +146,8 @@ namespace Guitab
 
         private void Tempo_TextChanged(object sender, TextChangedEventArgs e)
         {
-            setDuration();
+            if (hasLoadedBars)
+                setDuration();
         }
 
         private void timer_Tick(object sender, EventArgs e)
@@ -153,13 +155,7 @@ namespace Guitab
             if (!mediaPlayerIsPlaying)
                 return;
             long msec = statusBar.ElapsedMilliseconds;
-            viewBars.TimerTick(msec);
-            //if ((mePlayer.Source != null) && (mePlayer.NaturalDuration.HasTimeSpan) && (!userIsDraggingSlider))
-            //{
-            //    sliProgress.Minimum = 0;
-            //    sliProgress.Maximum = mePlayer.NaturalDuration.TimeSpan.TotalSeconds;
-            //    sliProgress.Value = mePlayer.Position.TotalSeconds;
-            //}
+            viewBars.TimerTick(msec, beatsPerMinute);
         }
 
         private void Open_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -191,9 +187,14 @@ namespace Guitab
             get { return tempo.IntegerValue; }
         }
 
+        bool hasLoadedBars
+        {
+            get { return (viewBars != null) && viewBars.HasLoadedBars; }
+        }
+
         private void Play_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = (viewBars != null) && viewBars.HasLoadedBars;
+            e.CanExecute = hasLoadedBars;
         }
 
         private void Play_Executed(object sender, ExecutedRoutedEventArgs e)

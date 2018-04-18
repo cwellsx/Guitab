@@ -17,6 +17,7 @@ namespace Guitab.Model
         internal int beatsPerBar { get { return signature.beatsPerBar; } }
         internal int beatUnit { get { return signature.beatUnit; } }
         internal int nIntervalsPerBar { get { return signature.nIntervalsPerBar; } }
+        internal int nIntervalsPerBeat { get { return signature.nIntervalsPerBeat; } }
 
         internal State Clone()
         {

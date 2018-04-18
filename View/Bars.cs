@@ -25,9 +25,12 @@ namespace Guitab.View
     {
         Model.Bars modelBars;
         List<Bar> bars;
+        Model.When? previous;
 
         internal void Load(Model.Bars modelBars)
         {
+            Children.Clear();
+
             this.modelBars = modelBars;
 
             // create a View.Bar for each Model.Bar
@@ -40,6 +43,8 @@ namespace Guitab.View
                 Children.Add(bar);
                 return bar;
             }));
+
+            previous = null;
         }
 
         internal bool HasLoadedBars { get { return bars != null && bars.Count > 0; } }
@@ -50,12 +55,21 @@ namespace Guitab.View
             return modelBars.getMsec(beatsPerMinute);
         }
 
-        internal void TimerTick(long msec)
+        internal void TimerTick(long msec, int beatsPerMinute)
         {
-            msec = msec % 2000;
+            Model.When when = modelBars.getWhen(msec, beatsPerMinute);
 
-            Bar bar = bars[0];
-            bar.TimerTick(msec);
+            if (previous.HasValue)
+            {
+                if (previous.Value.barIndex!=when.barIndex)
+                {
+                    bars[previous.Value.barIndex].TimerRemove();
+                }
+            }
+
+            bars[when.barIndex].TimerTick(when.msecWithinBar, when.msecBarDuration);
+
+            previous = when;
         }
     }
 }

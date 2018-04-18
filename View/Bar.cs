@@ -198,16 +198,35 @@ namespace Guitab.View
             return line;
         }
 
-        internal void TimerTick(long msec)
+        internal void TimerRemove()
+        {
+            if (cursor == null)
+                throw new Exception();
+            base.Children.Remove(cursor);
+            cursor = null;
+        }
+
+        internal void TimerTick(int msecWithinBar, int msecBarDuration)
         {
             if (cursor == null)
             {
-                cursor = newLine(20, 20, 50, 150, Brushes.Red);
+                cursor = newLine(0, 0, 50, 150, Brushes.Red);
             }
 
-            //msec -= msec % 125;
+            SetLeft(cursor, timeTickX(msecWithinBar, msecBarDuration));
+        }
 
-            SetLeft(cursor, 180 * msec / 2000);
+        double timeTickX(int msecWithinBar, int msecBarDuration)
+        {
+            if (msecWithinBar== msecBarDuration)
+            {
+                msecWithinBar -= 10;
+            }
+            double fraction = (double)msecWithinBar / msecBarDuration;
+
+            int interval = (int)(fraction * state.nIntervalsPerBar);
+            double time = (double)interval / state.nIntervalsPerBeat;
+            return timeX(time, LabelType.Note);
         }
     }
 }
