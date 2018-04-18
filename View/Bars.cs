@@ -61,15 +61,29 @@ namespace Guitab.View
 
             if (previous.HasValue)
             {
-                if (previous.Value.barIndex!=when.barIndex)
+                if (previous.Value.barIndex != when.barIndex)
                 {
-                    bars[previous.Value.barIndex].TimerRemove();
+                    removePrevious();
                 }
             }
 
             bars[when.barIndex].TimerTick(when.msecWithinBar, when.msecBarDuration);
 
             previous = when;
+        }
+
+        void removePrevious()
+        {
+            bars[previous.Value.barIndex].TimerRemove();
+        }
+
+        internal void StopPlay()
+        {
+            if (previous.HasValue)
+            {
+                removePrevious();
+                previous = null;
+            }
         }
     }
 }

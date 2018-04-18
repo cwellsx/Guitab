@@ -218,7 +218,7 @@ namespace Guitab.View
 
         double timeTickX(int msecWithinBar, int msecBarDuration)
         {
-            if (msecWithinBar== msecBarDuration)
+            if (msecWithinBar == msecBarDuration)
             {
                 msecWithinBar -= 10;
             }

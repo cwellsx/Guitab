@@ -30,24 +30,31 @@ namespace Guitab
     {
         // code and XAML copied from http://www.wpf-tutorial.com/audio-video/how-to-creating-a-complete-audio-video-player/
 
-        private bool mediaPlayerIsPlaying = false;
-
         // wraps the slider and status controls
         class StatusBar
         {
+            enum State { Stopped, Playing, Paused };
+
             // slider shows bars, not time
             bool sliderShowsTime = false;
 
-            TextBlock statusText;
-            Slider slider;
+            readonly TextBlock statusText;
+            readonly Slider slider;
+            readonly Stopwatch stopwatch = new Stopwatch();
 
-            Stopwatch stopwatch = new Stopwatch();
             long durationMsec;
+            bool userIsDraggingSlider = false;
+            State state = State.Stopped;
 
             internal long ElapsedMilliseconds { get { return stopwatch.ElapsedMilliseconds; } }
 
-            private bool userIsDraggingSlider = false;
+            // before the MainWindow calls InitializeComponent()
+            internal StatusBar()
+            {
 
+            }
+
+            // before the MainWindow calls InitializeComponent()
             internal StatusBar(TextBlock statusText, Slider slider)
             {
                 this.statusText = statusText;
@@ -103,13 +110,26 @@ namespace Guitab
                 }
             }
 
-            internal void StartPlay()
+            internal bool isPlayStarted { get { return state == State.Playing; } }
+            internal bool isPlayStopped { get { return state == State.Stopped; } }
+
+            internal void PlayStart()
             {
+                state = State.Playing;
                 stopwatch.Start();
             }
 
-            internal void StopPlay()
+            internal void PlayPause()
             {
+                state = State.Paused;
+                stopwatch.Stop();
+            }
+
+            internal void PlayStop()
+            {
+                state = State.Stopped;
+                stopwatch.Stop();
+                stopwatch.Reset();
                 if (sliderShowsTime)
                 {
                     slider.Value = 0;
@@ -125,6 +145,8 @@ namespace Guitab
 
         public MainWindow()
         {
+            statusBar = new StatusBar();
+
             InitializeComponent();
 
             statusBar = new StatusBar(lblProgressStatus, sliProgress);
@@ -152,7 +174,7 @@ namespace Guitab
 
         private void timer_Tick(object sender, EventArgs e)
         {
-            if (!mediaPlayerIsPlaying)
+            if (!statusBar.isPlayStarted)
                 return;
             long msec = statusBar.ElapsedMilliseconds;
             viewBars.TimerTick(msec, beatsPerMinute);
@@ -199,31 +221,30 @@ namespace Guitab
 
         private void Play_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            mediaPlayerIsPlaying = true;
-            statusBar.StartPlay();
+            statusBar.PlayStart();
         }
 
         private void Pause_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             // to do: add "and not at end of bars"
-            e.CanExecute = mediaPlayerIsPlaying;
+            e.CanExecute = statusBar.isPlayStarted;
         }
 
         private void Pause_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            mediaPlayerIsPlaying = false;
+            statusBar.PlayPause();
         }
 
         private void Stop_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             // to do: same as Pause_CanExecute
-            e.CanExecute = mediaPlayerIsPlaying;
+            e.CanExecute = !statusBar.isPlayStopped;
         }
 
         private void Stop_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            mediaPlayerIsPlaying = false;
-            statusBar.StopPlay();
+            statusBar.PlayStop();
+            viewBars.StopPlay();
         }
 
         private void sliProgress_DragStarted(object sender, DragStartedEventArgs e)
