@@ -36,5 +36,12 @@ namespace Guitab.Model
             if (glyph.time >= state.beatsPerBar)
                 throw new Exception();
         }
+
+        internal int getMsec(int beatsPerMinute)
+        {
+            // msec = minutes per bar * 60 * 1000
+            double msec = ((double)state.beatsPerBar / beatsPerMinute) * 60 * 1000;
+            return (int)msec;
+        }
     }
 }

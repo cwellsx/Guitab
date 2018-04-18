@@ -33,9 +33,12 @@
             <Button Command="MediaCommands.Stop">
                 <Image Source="/Images/StatusStop_32x.png" />
             </Button>
+            <Separator />
+            <Label Content="Tempo:" VerticalAlignment="Center"/>
+            <localView:IntegerTextBox x:Name="tempo" VerticalAlignment="Center" MinValue="1"/>
+            <Label Content="beats/minute" VerticalAlignment="Center"/>
         </ToolBar>
 
-        <!--<MediaElement Name="mePlayer" Grid.Row="1" LoadedBehavior="Manual" Stretch="None" />-->
         <localView:Bars x:Name="viewBars" Grid.Row="1" />
 
         <StatusBar Grid.Row="2">

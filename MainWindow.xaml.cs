@@ -51,13 +51,21 @@ namespace Guitab
             timer.Interval = TimeSpan.FromMilliseconds(1);
             timer.Tick += timer_Tick;
             timer.Start();
+
+            tempo.IntegerValue = 170;
+            tempo.TextChanged += Tempo_TextChanged;
+        }
+
+        private void Tempo_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            setDuration();
         }
 
         private void timer_Tick(object sender, EventArgs e)
         {
             if (!mediaPlayerIsPlaying)
                 return;
-            long msec=stopwatch.ElapsedMilliseconds;
+            long msec = stopwatch.ElapsedMilliseconds;
             viewBars.TimerTick(msec);
             //if ((mePlayer.Source != null) && (mePlayer.NaturalDuration.HasTimeSpan) && (!userIsDraggingSlider))
             //{
@@ -80,40 +88,59 @@ namespace Guitab
             //    mePlayer.Source = new Uri(openFileDialog.FileName);
             Model.Bars modelBars = Model.InputFile.Load();
             viewBars.Load(modelBars);
+
+            sliProgress.Minimum = 0;
+            sliProgress.Value = 0;
+            setDuration();
+        }
+
+        void setDuration()
+        {
+            double oldMaximum = sliProgress.Maximum;
+            sliProgress.Maximum = viewBars.getMsec(beatsPerMinute);
+            if (oldMaximum != 0 && sliProgress.Value != 0)
+            {
+                sliProgress.Value = sliProgress.Value * sliProgress.Maximum / oldMaximum;
+            }
+        }
+
+        int beatsPerMinute
+        {
+            get { return tempo.IntegerValue; }
         }
 
         private void Play_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            //e.CanExecute = (mePlayer != null) && (mePlayer.Source != null);
-            e.CanExecute = (viewBars != null)&& viewBars.HasLoadedBars;
+            e.CanExecute = (viewBars != null) && viewBars.HasLoadedBars;
         }
 
         private void Play_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            //mePlayer.Play();
             mediaPlayerIsPlaying = true;
             stopwatch.Start();
         }
 
         private void Pause_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
+            // to do: add "and not at end of bars"
             e.CanExecute = mediaPlayerIsPlaying;
         }
 
         private void Pause_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            //mePlayer.Pause();
+            mediaPlayerIsPlaying = false;
         }
 
         private void Stop_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
+            // to do: same as Pause_CanExecute
             e.CanExecute = mediaPlayerIsPlaying;
         }
 
         private void Stop_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            //mePlayer.Stop();
             mediaPlayerIsPlaying = false;
+            sliProgress.Value = 0;
         }
 
         private void sliProgress_DragStarted(object sender, DragStartedEventArgs e)
@@ -124,12 +151,13 @@ namespace Guitab
         private void sliProgress_DragCompleted(object sender, DragCompletedEventArgs e)
         {
             userIsDraggingSlider = false;
+            //int msec = sliProgress.Value;
             //mePlayer.Position = TimeSpan.FromSeconds(sliProgress.Value);
         }
 
         private void sliProgress_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            lblProgressStatus.Text = TimeSpan.FromSeconds(sliProgress.Value).ToString(@"hh\:mm\:ss");
+            lblProgressStatus.Text = TimeSpan.FromMilliseconds(sliProgress.Value).ToString(@"hh\:mm\:ss");
         }
 
         private void Grid_MouseWheel(object sender, MouseWheelEventArgs e)

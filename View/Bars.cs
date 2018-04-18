@@ -23,10 +23,13 @@ namespace Guitab.View
 
     public class Bars : WrapPanel
     {
+        Model.Bars modelBars;
         List<Bar> bars;
 
         internal void Load(Model.Bars modelBars)
         {
+            this.modelBars = modelBars;
+
             // create a View.Bar for each Model.Bar
             // and add each new View.Bar to this.Children
             bars = new List<Bar>(modelBars.bars.Select(modelBar =>
@@ -40,6 +43,12 @@ namespace Guitab.View
         }
 
         internal bool HasLoadedBars { get { return bars != null && bars.Count > 0; } }
+
+        internal int getMsec(int beatsPerMinute)
+        {
+            // delegate to the data
+            return modelBars.getMsec(beatsPerMinute);
+        }
 
         internal void TimerTick(long msec)
         {
