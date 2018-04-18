@@ -31,15 +31,102 @@ namespace Guitab
         // code and XAML copied from http://www.wpf-tutorial.com/audio-video/how-to-creating-a-complete-audio-video-player/
 
         private bool mediaPlayerIsPlaying = false;
-        private bool userIsDraggingSlider = false;
 
-        Stopwatch stopwatch = new Stopwatch();
-        //bool playing;
+        // wraps the slider and status controls
+        class StatusBar
+        {
+            // slider shows bars, not time
+            bool sliderShowsTime = false;
+
+            TextBlock statusText;
+            Slider slider;
+
+            Stopwatch stopwatch = new Stopwatch();
+            long durationMsec;
+
+            internal long ElapsedMilliseconds { get { return stopwatch.ElapsedMilliseconds; } }
+
+            private bool userIsDraggingSlider = false;
+
+            internal StatusBar(TextBlock statusText, Slider slider)
+            {
+                this.statusText = statusText;
+                this.slider = slider;
+                slider.IsEnabled = false;
+            }
+
+            // called on load and/or when tempo is changed
+            internal void SetDuration(long durationMsec)
+            {
+                this.durationMsec = durationMsec;
+                if (sliderShowsTime)
+                {
+                    double oldMaximum = slider.Maximum;
+                    slider.Maximum = durationMsec;
+                    if (oldMaximum != 0 && slider.Value != 0)
+                    {
+                        slider.Value = slider.Value * slider.Maximum / oldMaximum;
+                    }
+                }
+            }
+
+            internal void OnLoad(int nBars)
+            {
+                slider.IsEnabled = true;
+                slider.Minimum = 1;
+                slider.Value = 1;
+                slider.SmallChange = 1;
+                slider.Maximum = nBars + 0.99;
+                ShowProgressStatus();
+            }
+
+            internal void SetDragging(bool isStarted)
+            {
+                userIsDraggingSlider = isStarted;
+                if (!isStarted)
+                {
+                    // todo: update the stopwatch
+                    // update
+                }
+            }
+
+            internal void ShowProgressStatus()
+            {
+                if (sliderShowsTime)
+                {
+                    statusText.Text = TimeSpan.FromMilliseconds(slider.Value).ToString(@"hh\:mm\:ss");
+                }
+                else
+                {
+                    statusText.Text = ((int)(slider.Value)).ToString(@"D");
+                }
+            }
+
+            internal void StartPlay()
+            {
+                stopwatch.Start();
+            }
+
+            internal void StopPlay()
+            {
+                if (sliderShowsTime)
+                {
+                    slider.Value = 0;
+                }
+                else
+                {
+                    slider.Value = 1;
+                }
+            }
+        }
+
+        StatusBar statusBar;
 
         public MainWindow()
         {
             InitializeComponent();
 
+            statusBar = new StatusBar(lblProgressStatus, sliProgress);
             //ellapsed = new TimeSpan();
 
             // 170 bpm = 3 per second sec
@@ -65,7 +152,7 @@ namespace Guitab
         {
             if (!mediaPlayerIsPlaying)
                 return;
-            long msec = stopwatch.ElapsedMilliseconds;
+            long msec = statusBar.ElapsedMilliseconds;
             viewBars.TimerTick(msec);
             //if ((mePlayer.Source != null) && (mePlayer.NaturalDuration.HasTimeSpan) && (!userIsDraggingSlider))
             //{
@@ -89,19 +176,14 @@ namespace Guitab
             Model.Bars modelBars = Model.InputFile.Load();
             viewBars.Load(modelBars);
 
-            sliProgress.Minimum = 0;
-            sliProgress.Value = 0;
+            statusBar.OnLoad(modelBars.nBars);
             setDuration();
         }
 
         void setDuration()
         {
-            double oldMaximum = sliProgress.Maximum;
-            sliProgress.Maximum = viewBars.getMsec(beatsPerMinute);
-            if (oldMaximum != 0 && sliProgress.Value != 0)
-            {
-                sliProgress.Value = sliProgress.Value * sliProgress.Maximum / oldMaximum;
-            }
+            int msec = viewBars.getMsec(beatsPerMinute);
+            statusBar.SetDuration(msec);
         }
 
         int beatsPerMinute
@@ -117,7 +199,7 @@ namespace Guitab
         private void Play_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             mediaPlayerIsPlaying = true;
-            stopwatch.Start();
+            statusBar.StartPlay();
         }
 
         private void Pause_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -140,24 +222,24 @@ namespace Guitab
         private void Stop_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             mediaPlayerIsPlaying = false;
-            sliProgress.Value = 0;
+            statusBar.StopPlay();
         }
 
         private void sliProgress_DragStarted(object sender, DragStartedEventArgs e)
         {
-            userIsDraggingSlider = true;
+            statusBar.SetDragging(true);
         }
 
         private void sliProgress_DragCompleted(object sender, DragCompletedEventArgs e)
         {
-            userIsDraggingSlider = false;
-            //int msec = sliProgress.Value;
-            //mePlayer.Position = TimeSpan.FromSeconds(sliProgress.Value);
+            statusBar.SetDragging(false);
+            // todo: update the view
         }
 
         private void sliProgress_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            lblProgressStatus.Text = TimeSpan.FromMilliseconds(sliProgress.Value).ToString(@"hh\:mm\:ss");
+            statusBar.ShowProgressStatus();
+            // todo: update the view
         }
 
         private void Grid_MouseWheel(object sender, MouseWheelEventArgs e)

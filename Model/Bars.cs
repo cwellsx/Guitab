@@ -17,7 +17,9 @@ namespace Guitab.Model
 
         internal IEnumerable<Bar> bars {  get { return listBars; } }
 
-        internal Bar this[int index] {  get { return listBars[index]; } }
+        internal Bar this[int index] { get { return listBars[index]; } }
+
+        internal int nBars { get { return listBars.Count; } }
 
         internal int getMsec(int beatsPerMinute)
         {
