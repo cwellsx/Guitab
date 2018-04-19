@@ -187,7 +187,6 @@ namespace Guitab.View
 
             line.StrokeThickness = 1;
             line.Stroke = brush;
-            line.Fill = brush;
 
             // https://stackoverflow.com/questions/2879033/how-do-you-draw-a-line-on-a-canvas-in-wpf-that-is-1-pixel-thick
             line.SnapsToDevicePixels = true;
@@ -206,27 +205,16 @@ namespace Guitab.View
             cursor = null;
         }
 
-        internal void TimerTick(int msecWithinBar, int msecBarDuration)
+        internal void TimerTick(double time)
         {
             if (cursor == null)
             {
                 cursor = newLine(0, 0, 50, 150, Brushes.Red);
             }
 
-            SetLeft(cursor, timeTickX(msecWithinBar, msecBarDuration));
-        }
-
-        double timeTickX(int msecWithinBar, int msecBarDuration)
-        {
-            if (msecWithinBar == msecBarDuration)
-            {
-                msecWithinBar -= 10;
-            }
-            double fraction = (double)msecWithinBar / msecBarDuration;
-
-            int interval = (int)(fraction * state.nIntervalsPerBar);
-            double time = (double)interval / state.nIntervalsPerBeat;
-            return timeX(time, LabelType.Note);
+            // https://stackoverflow.com/a/49915112/49942
+            double x = (int)timeX(time, LabelType.Note) + 0.5;
+            SetLeft(cursor, x);
         }
     }
 }

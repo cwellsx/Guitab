@@ -75,6 +75,7 @@ namespace Guitab.View
 
         void timerTick(Model.When when, Action<int> setNewBarIndex)
         {
+            bool skip = false;
             if (previous.HasValue)
             {
                 if (previous.Value.barIndex != when.barIndex)
@@ -82,9 +83,15 @@ namespace Guitab.View
                     removePrevious();
                     setNewBarIndex(when.barIndex);
                 }
+                else if (previous.Value.time == when.time)
+                {
+                    // may be different msec but is still same time interval as before
+                    skip = true;
+                }
             }
 
-            bars[when.barIndex].TimerTick(when.msecWithinBar, when.msecBarDuration);
+            if (!skip)
+                bars[when.barIndex].TimerTick(when.time);
 
             previous = when;
         }

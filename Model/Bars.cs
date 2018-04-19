@@ -37,7 +37,7 @@ namespace Guitab.Model
                 if (msecBarDuration > msec)
                 {
                     // found it
-                    return new When(i, (int)msec, msecBarDuration);
+                    return new When(i, (int)msec, msecBarDuration, listBars[i].state);
                 }
                 msec -= msecBarDuration;
             }
