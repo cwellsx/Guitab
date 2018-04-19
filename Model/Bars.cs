@@ -26,7 +26,7 @@ namespace Guitab.Model
             return listBars.Sum(bar => bar.getMsec(beatsPerMinute));
         }
 
-        internal When getWhen(long msec, int beatsPerMinute)
+        internal When? getWhen(long msec, int beatsPerMinute)
         {
             for (int i = 0; i < listBars.Count; ++i)
             {
@@ -39,7 +39,7 @@ namespace Guitab.Model
                 msec -= msecBarDuration;
             }
 
-            return new When(listBars.Count - 1, listBars[listBars.Count - 1].getMsec(beatsPerMinute));
+            return null;
         }
     }
 }

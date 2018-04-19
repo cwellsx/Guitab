@@ -22,12 +22,5 @@ namespace Guitab.Model
             this.msecWithinBar = msecWithinBar;
             this.msecBarDuration = msecBarDuration;
         }
-
-        internal When(
-            int barIndex,
-            int msecBarDuration
-            ) : this(barIndex, msecBarDuration, msecBarDuration)
-        {
-        }
     }
 }

@@ -85,6 +85,8 @@ namespace Guitab
                 slider.Value = 1;
                 slider.SmallChange = 1;
                 slider.Maximum = nBars + 0.99;
+                slider.TickFrequency = 1;
+                slider.IsSnapToTickEnabled = true;
                 ShowProgressStatus();
             }
 
@@ -139,6 +141,11 @@ namespace Guitab
                     slider.Value = 1;
                 }
             }
+
+            internal void SetNewBarIndex(int barIndex)
+            {
+                slider.Value = barIndex + 1;
+            }
         }
 
         StatusBar statusBar;
@@ -177,7 +184,8 @@ namespace Guitab
             if (!statusBar.isPlayStarted)
                 return;
             long msec = statusBar.ElapsedMilliseconds;
-            viewBars.TimerTick(msec, beatsPerMinute);
+            if (!viewBars.TimerTick(msec, beatsPerMinute, statusBar.SetNewBarIndex))
+                statusBar.PlayStop();
         }
 
         private void Open_CanExecute(object sender, CanExecuteRoutedEventArgs e)

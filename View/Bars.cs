@@ -55,15 +55,32 @@ namespace Guitab.View
             return modelBars.getMsec(beatsPerMinute);
         }
 
-        internal void TimerTick(long msec, int beatsPerMinute)
-        {
-            Model.When when = modelBars.getWhen(msec, beatsPerMinute);
 
+        // caution: this is called very frequently i.e. as often as possible
+        internal bool TimerTick(long msec, int beatsPerMinute, Action<int> setNewBarIndex)
+        {
+            Model.When? when = modelBars.getWhen(msec, beatsPerMinute);
+
+            if (!when.HasValue)
+            {
+                // end of play
+                StopPlay();
+                return false;
+            }
+
+            timerTick(when.Value, setNewBarIndex);
+
+            return true; ;
+        }
+
+        void timerTick(Model.When when, Action<int> setNewBarIndex)
+        {
             if (previous.HasValue)
             {
                 if (previous.Value.barIndex != when.barIndex)
                 {
                     removePrevious();
+                    setNewBarIndex(when.barIndex);
                 }
             }
 
@@ -75,6 +92,7 @@ namespace Guitab.View
         void removePrevious()
         {
             bars[previous.Value.barIndex].TimerRemove();
+            previous = null;
         }
 
         internal void StopPlay()
