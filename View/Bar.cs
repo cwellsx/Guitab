@@ -17,6 +17,7 @@ namespace Guitab.View
     {
         readonly Model.State state;
         Line cursor;
+        TextBlock countdown;
 
         enum LabelType { Chord, Note, BarNumber, Comment };
 
@@ -115,7 +116,7 @@ namespace Guitab.View
             return (180 * (time / beatsPerBar)) + 20;
         }
 
-        void newLabel(double y, double x, string text, LabelType labelType)
+        TextBlock newLabel(double y, double x, string text, LabelType labelType)
         {
             TextBlock textBlock = new TextBlock();
             textBlock.Text = text;
@@ -170,6 +171,7 @@ namespace Guitab.View
             Canvas.SetLeft(textBlock, x);
 
             base.Children.Add(textBlock);
+            return textBlock;
         }
 
         void newHorizontal(double x1, double x2, double y)
@@ -199,6 +201,7 @@ namespace Guitab.View
 
         internal void TimerRemove()
         {
+            countdownRemove();
             if (cursor == null)
                 throw new Exception();
             base.Children.Remove(cursor);
@@ -207,6 +210,7 @@ namespace Guitab.View
 
         internal void TimerTick(double time)
         {
+            countdownRemove();
             if (cursor == null)
             {
                 cursor = newLine(0, 0, 50, 150, Brushes.Red);
@@ -215,6 +219,33 @@ namespace Guitab.View
             // https://stackoverflow.com/a/49915112/49942
             double x = (int)timeX(time, LabelType.Note) + 0.5;
             SetLeft(cursor, x);
+        }
+
+        void countdownRemove()
+        {
+            if (countdown != null)
+            {
+                base.Children.Remove(countdown);
+                countdown = null;
+            }
+        }
+
+        internal void CountdownTick(int interval)
+        {
+            if (countdown == null)
+            {
+                countdown = newLabel(
+                    20, //lineY(3),
+                    20, //timeX((double)state.beatsPerBar / 2, LabelType.Note),
+                    "",
+                    LabelType.Note
+                    );
+                countdown.FontSize = 32;
+            }
+            int nBeats = interval / state.nIntervalsPerBeat;
+            int remainder = interval % state.nIntervalsPerBeat;
+            string text = string.Format("{0} {1}", nBeats + 1, new string('&', remainder));
+            countdown.Text = text;
         }
     }
 }

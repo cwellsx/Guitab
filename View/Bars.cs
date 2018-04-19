@@ -59,6 +59,20 @@ namespace Guitab.View
         // caution: this is called very frequently i.e. as often as possible
         internal bool TimerTick(long msec, int beatsPerMinute, int sliderBarOffset, Action<int> setNewBarIndex)
         {
+            if (sliderBarOffset < 1)
+                throw new Exception();
+            --sliderBarOffset;
+
+            Model.Bar firstBar = modelBars[sliderBarOffset];
+            int firstMsecs = firstBar.getMsec(beatsPerMinute);
+            if (msec < firstMsecs)
+            {
+                int interval = (int)((double)firstBar.state.nIntervalsPerBar * msec / firstMsecs);
+                bars[sliderBarOffset].CountdownTick(interval);
+                return true;
+            }
+            msec -= firstMsecs;
+
             Model.When? when = modelBars.getWhen(msec, beatsPerMinute, sliderBarOffset);
 
             if (!when.HasValue)
@@ -70,7 +84,7 @@ namespace Guitab.View
 
             timerTick(when.Value, setNewBarIndex);
 
-            return true; ;
+            return true;
         }
 
         void timerTick(Model.When when, Action<int> setNewBarIndex)

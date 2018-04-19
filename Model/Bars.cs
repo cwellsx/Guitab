@@ -28,10 +28,7 @@ namespace Guitab.Model
 
         internal When? getWhen(long msec, int beatsPerMinute, int sliderBarOffset)
         {
-            if (sliderBarOffset < 1)
-                throw new Exception();
-
-            for (int i = sliderBarOffset - 1; i < listBars.Count; ++i)
+            for (int i = sliderBarOffset; i < listBars.Count; ++i)
             {
                 int msecBarDuration = listBars[i].getMsec(beatsPerMinute);
                 if (msecBarDuration > msec)
