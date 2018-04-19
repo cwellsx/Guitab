@@ -46,12 +46,12 @@ namespace Guitab
             bool userIsDraggingSlider = false;
             State state = State.Stopped;
 
+            internal int SliderBarOffset { get; private set; }
             internal long ElapsedMilliseconds { get { return stopwatch.ElapsedMilliseconds; } }
 
             // before the MainWindow calls InitializeComponent()
             internal StatusBar()
             {
-
             }
 
             // before the MainWindow calls InitializeComponent()
@@ -60,6 +60,7 @@ namespace Guitab
                 this.statusText = statusText;
                 this.slider = slider;
                 slider.IsEnabled = false;
+                SliderBarOffset = 1;
             }
 
             // called on load and/or when tempo is changed
@@ -95,6 +96,7 @@ namespace Guitab
                 userIsDraggingSlider = isStarted;
                 if (!isStarted)
                 {
+                    SliderBarOffset = (int)slider.Value;
                     // todo: update the stopwatch
                     // update
                 }
@@ -138,7 +140,7 @@ namespace Guitab
                 }
                 else
                 {
-                    slider.Value = 1;
+                    slider.Value = SliderBarOffset;
                 }
             }
 
@@ -184,7 +186,7 @@ namespace Guitab
             if (!statusBar.isPlayStarted)
                 return;
             long msec = statusBar.ElapsedMilliseconds;
-            if (!viewBars.TimerTick(msec, beatsPerMinute, statusBar.SetNewBarIndex))
+            if (!viewBars.TimerTick(msec, beatsPerMinute, statusBar.SliderBarOffset, statusBar.SetNewBarIndex))
                 statusBar.PlayStop();
         }
 
@@ -234,7 +236,6 @@ namespace Guitab
 
         private void Pause_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            // to do: add "and not at end of bars"
             e.CanExecute = statusBar.isPlayStarted;
         }
 
@@ -245,7 +246,6 @@ namespace Guitab
 
         private void Stop_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            // to do: same as Pause_CanExecute
             e.CanExecute = !statusBar.isPlayStopped;
         }
 

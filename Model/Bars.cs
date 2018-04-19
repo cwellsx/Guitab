@@ -26,9 +26,12 @@ namespace Guitab.Model
             return listBars.Sum(bar => bar.getMsec(beatsPerMinute));
         }
 
-        internal When? getWhen(long msec, int beatsPerMinute)
+        internal When? getWhen(long msec, int beatsPerMinute, int sliderBarOffset)
         {
-            for (int i = 0; i < listBars.Count; ++i)
+            if (sliderBarOffset < 1)
+                throw new Exception();
+
+            for (int i = sliderBarOffset - 1; i < listBars.Count; ++i)
             {
                 int msecBarDuration = listBars[i].getMsec(beatsPerMinute);
                 if (msecBarDuration > msec)

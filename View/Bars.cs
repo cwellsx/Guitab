@@ -57,9 +57,9 @@ namespace Guitab.View
 
 
         // caution: this is called very frequently i.e. as often as possible
-        internal bool TimerTick(long msec, int beatsPerMinute, Action<int> setNewBarIndex)
+        internal bool TimerTick(long msec, int beatsPerMinute, int sliderBarOffset, Action<int> setNewBarIndex)
         {
-            Model.When? when = modelBars.getWhen(msec, beatsPerMinute);
+            Model.When? when = modelBars.getWhen(msec, beatsPerMinute, sliderBarOffset);
 
             if (!when.HasValue)
             {
